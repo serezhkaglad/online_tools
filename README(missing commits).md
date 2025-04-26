@@ -1,0 +1,1 @@
+I messed up my github setup somehow, so it always gave me different errors when I tried to push the changes and eventually I had to force push everything from the scratch (git push --force), erasing all the previous commitments(was around 6 more of them).
