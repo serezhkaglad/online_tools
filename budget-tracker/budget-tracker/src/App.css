@@ -56,3 +56,13 @@ li {
 .income {
   border-left: 5px solid green;
 }
+
+.container.light {
+  background-color: #fff;
+  color: #000;
+}
+
+.container.dark {
+  background-color: #333;
+  color: #fff;
+}
