@@ -6,12 +6,13 @@ import { SettingsProvider, useSettings } from "./SettingsContext";
 import SettingsDialog from "./SettingsDialog";
 
 function BudgetTracker() {
-  const { saldo, transactions, addTransaction, deleteTransaction } = useContext(BudgetContext);
+  const { saldo, transactions, addTransaction, deleteTransaction, categories } = useContext(BudgetContext);
   const { currency, theme} = useSettings();
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
+  const [category, setCategory] = useState(categories[0] || "salary");
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [showSettings, setShowSettings] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
 
   const handleAddTransaction = () => {
     if (description && amount) {
@@ -19,10 +20,12 @@ function BudgetTracker() {
         id: Date.now(),
         description,
         amount: parseFloat(amount),
+        category,
       };
       addTransaction(newTransaction);
       setDescription("");
       setAmount("");
+      setCategory(categories[0] || "salary");
     }
   };
 
@@ -42,23 +45,32 @@ function BudgetTracker() {
   };
 
   return (
-    <div className="container">
+    <div className={`container ${theme}`}>
+      <button className="settings-button" onClick={() => setSettingsOpen(true)}>Settings</button>
+
       <h2>Budget Tracker</h2>
-      <div className="balance">Saldo<br />{saldo.toFixed(2)} €</div>
+      <div className="balance">Balance<br />{saldo.toFixed(2)} {currency}</div>
 
       <div className="input-group">
         <input
           type="text"
-          placeholder="Description"
+          placeholder="Enter description..."
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
         <input
           type="number"
-          placeholder="Sum"
+          placeholder="Enter amount..."
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
         />
+        <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          {categories.map((c, idx) => (
+            <option key={idx} value={c}>
+              {c}
+            </option>
+          ))}
+        </select>
         <button onClick={handleAddTransaction}>Add Transaction</button>
       </div>
 
@@ -66,8 +78,8 @@ function BudgetTracker() {
       <ul>
         {transactions.map((t) => (
           <li key={t.id} className={t.amount < 0 ? "expense" : "income"}>
-            {t.description} {t.amount.toFixed(2)} €
-            <button onClick={() => handleDelete(t)}>Poista</button>
+            {t.description} ({t.category}) {t.amount.toFixed(2)} {currency}
+            <button onClick={() => handleDelete(t)}>Delete</button>
           </li>
         ))}
       </ul>
@@ -80,7 +92,7 @@ function BudgetTracker() {
         />
       )}
 
-      {showSettings && <SettingsDialog onClose={() => setShowSettings(false)} />}
+      {settingsOpen && <SettingsDialog onClose={() => setSettingsOpen(false)} />}
     </div>
   );
 }

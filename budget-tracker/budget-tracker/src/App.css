@@ -66,3 +66,16 @@ li {
   background-color: #333;
   color: #fff;
 }
+
+.settings-button{
+  margin-bottom: 10px;
+  background-color: #4caf50;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  cursor: pointer;
+}
+
+.settings-button:hover{
+  background-color: #45a049;
+}

@@ -1,12 +1,10 @@
-import React, { createContext, useReducer } from 'react';
+import React, { createContext, useReducer, useState } from 'react';
 
-// Initial State
 const initialState = {
   saldo: 0,
   transactions: []
 };
 
-// Reducer function
 function budgetReducer(state, action) {
   switch (action.type) {
     case 'ADD_TRANSACTION':
@@ -26,12 +24,13 @@ function budgetReducer(state, action) {
   }
 }
 
-// Create Context
 export const BudgetContext = createContext();
 
-// Provider Component
+const defaultCategories = ["salary", "food", "entertainment", "rent", "utilities"];
+
 export function BudgetProvider({ children }) {
   const [state, dispatch] = useReducer(budgetReducer, initialState);
+  const [categories] = useState(defaultCategories);
 
   const addTransaction = (transaction) => {
     dispatch({ type: 'ADD_TRANSACTION', payload: transaction });
@@ -46,9 +45,11 @@ export function BudgetProvider({ children }) {
       saldo: state.saldo,
       transactions: state.transactions,
       addTransaction,
-      deleteTransaction
+      deleteTransaction,
+      categories
     }}>
       {children}
     </BudgetContext.Provider>
   );
 }
+
