@@ -9,8 +9,9 @@ const initialState = {
 function budgetReducer(state, action) {
   switch (action.type) {
     case 'SET_TRANSACTIONS':
-      const saldo = action.payload.reduce((sum, t) => sum + Number(t.amount), 0);
-      return { transactions: action.payload, saldo };
+      const sortedTransactions = action.payload.sort((a, b) => new Date(b.date) - new Date(a.date));
+      const saldo = sortedTransactions.reduce((sum, t) => sum + Number(t.amount), 0);
+      return { transactions: sortedTransactions, saldo };
     case 'ADD_TRANSACTION':
       return {
         ...state,
@@ -40,7 +41,8 @@ export function BudgetProvider({ children }) {
     async function loadTransactions() {
       try {
         const data = await api.getTransactions();
-        dispatch({ type: 'SET_TRANSACTIONS', payload: data });
+        const sortedData = data.sort((a, b) => new Date(b.date) - new Date(a.date));
+        dispatch({ type: 'SET_TRANSACTIONS', payload: sortedData });
       } catch (error) {
         console.error("Failed to load transactions", error);
       }

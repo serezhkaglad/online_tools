@@ -1,35 +1,20 @@
-import React, { useState, useContext } from "react";
+import { useContext, useState } from "react";
 import "./App.css";
 import { BudgetProvider, BudgetContext } from "./BudgetAppContext"; 
-import ConfirmationDialog from "./ConfirmationDialog";
 import { SettingsProvider, useSettings } from "./SettingsContext";
+import { TransactionForm } from "./TransactionForm";
+import ConfirmationDialog from "./ConfirmationDialog";
 import SettingsDialog from "./SettingsDialog";
+import { ExpensePieChart, IncomeExpenseBarChart, SavingsLineChart } from "./Charts";
+import { CSVLink } from "react-csv";
+
+
 
 function BudgetTracker() {
-  const { saldo, transactions, addTransaction, deleteTransaction, categories } = useContext(BudgetContext);
-  const { currency, theme} = useSettings();
-  const [description, setDescription] = useState("");
-  const [amount, setAmount] = useState("");
-  const [category, setCategory] = useState(categories[0] || "salary");
+  const { saldo, transactions, deleteTransaction, categories, addTransaction } = useContext(BudgetContext);
+  const { currency, theme } = useSettings();
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
-
-  const handleAddTransaction = () => {
-    if (description && amount) {
-      const newTransaction = {
-        id: Date.now(),
-        description,
-        amount: parseFloat(amount),
-        category,
-        type: parseFloat(amount) <= 0 ? "income" : "expense",
-        date: new Date().toISOString().split('T')[0]
-      };
-      addTransaction(newTransaction);
-      setDescription("");
-      setAmount("");
-      setCategory(categories[0] || "salary");
-    }
-  };
 
   const handleDelete = (transaction) => {
     setDeleteTarget(transaction);
@@ -53,28 +38,7 @@ function BudgetTracker() {
       <h2>Budget Tracker</h2>
       <div className="balance">Balance<br />{saldo.toFixed(2)} {currency}</div>
 
-      <div className="input-group">
-        <input
-          type="text"
-          placeholder="Enter description..."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <input
-          type="number"
-          placeholder="Enter amount..."
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-        <select value={category} onChange={(e) => setCategory(e.target.value)}>
-          {categories.map((c, idx) => (
-            <option key={idx} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-        <button onClick={handleAddTransaction}>Add Transaction</button>
-      </div>
+      <TransactionForm addTransaction={addTransaction} categories={categories} />
 
       <h3>Transactions</h3>
       <ul>
@@ -85,6 +49,19 @@ function BudgetTracker() {
           </li>
         ))}
       </ul>
+
+      <CSVLink data={transactions} filename={"transactions.csv"} className="btn">
+      Export Transactions to CSV
+      </CSVLink>
+
+      <h3>Expense Pie Chart</h3>
+      <ExpensePieChart />
+
+      <h3>Monthly Income vs Expense</h3>
+      <IncomeExpenseBarChart />
+
+      <h3>Monthly Savings</h3>
+      <SavingsLineChart />
 
       {deleteTarget && (
         <ConfirmationDialog
@@ -102,9 +79,9 @@ function BudgetTracker() {
 function App() {
   return (
     <SettingsProvider>
-    <BudgetProvider>
-      <BudgetTracker />
-    </BudgetProvider>
+      <BudgetProvider>
+        <BudgetTracker />
+      </BudgetProvider>
     </SettingsProvider>
   );
 }
