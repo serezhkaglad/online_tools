@@ -14,7 +14,7 @@ export async function addTransaction(transaction) {
     category: transaction.category,
     amount: transaction.amount,
     description: transaction.description,
-    date: new Date().toISOString().split('T')[0], // format YYYY-MM-DD
+    date: new Date().toISOString().split('T')[0], 
   };
   
   await fetch(`${API_URL}`, {

@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import "./ConfirmationDialog.css"; // we'll make this tiny
+import "./ConfirmationDialog.css";
 
 function ConfirmationDialog({ message, onConfirm, onCancel }) {
   return ReactDOM.createPortal(
@@ -13,7 +13,7 @@ function ConfirmationDialog({ message, onConfirm, onCancel }) {
         </div>
       </div>
     </div>,
-    document.getElementById("modal-root") // 🆕 we will add this to index.html
+    document.getElementById("modal-root") 
   );
 }
 
