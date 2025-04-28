@@ -21,6 +21,8 @@ function BudgetTracker() {
         description,
         amount: parseFloat(amount),
         category,
+        type: parseFloat(amount) <= 0 ? "income" : "expense",
+        date: new Date().toISOString().split('T')[0]
       };
       addTransaction(newTransaction);
       setDescription("");
@@ -78,7 +80,7 @@ function BudgetTracker() {
       <ul>
         {transactions.map((t) => (
           <li key={t.id} className={t.amount < 0 ? "expense" : "income"}>
-            {t.description} ({t.category}) {t.amount.toFixed(2)} {currency}
+            {t.description} ({t.category}) {Number(t.amount).toFixed(2)} {currency}
             <button onClick={() => handleDelete(t)}>Delete</button>
           </li>
         ))}

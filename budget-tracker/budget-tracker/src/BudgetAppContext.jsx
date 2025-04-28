@@ -1,4 +1,5 @@
-import React, { createContext, useReducer, useState } from 'react';
+import React, { createContext, useReducer, useState, useEffect } from 'react';
+import * as api from './api';
 
 const initialState = {
   saldo: 0,
@@ -7,6 +8,9 @@ const initialState = {
 
 function budgetReducer(state, action) {
   switch (action.type) {
+    case 'SET_TRANSACTIONS':
+      const saldo = action.payload.reduce((sum, t) => sum + Number(t.amount), 0);
+      return { transactions: action.payload, saldo };
     case 'ADD_TRANSACTION':
       return {
         ...state,
@@ -32,11 +36,25 @@ export function BudgetProvider({ children }) {
   const [state, dispatch] = useReducer(budgetReducer, initialState);
   const [categories] = useState(defaultCategories);
 
-  const addTransaction = (transaction) => {
+  useEffect(() => {
+    async function loadTransactions() {
+      try {
+        const data = await api.getTransactions();
+        dispatch({ type: 'SET_TRANSACTIONS', payload: data });
+      } catch (error) {
+        console.error("Failed to load transactions", error);
+      }
+    }
+    loadTransactions();
+  }, []);
+
+  const addTransaction = async (transaction) => {
+    await api.addTransaction(transaction);
     dispatch({ type: 'ADD_TRANSACTION', payload: transaction });
   };
 
-  const deleteTransaction = (transaction) => {
+  const deleteTransaction = async (transaction) => {
+    await api.deleteTransaction(transaction.id);
     dispatch({ type: 'DELETE_TRANSACTION', payload: transaction });
   };
 
@@ -52,4 +70,3 @@ export function BudgetProvider({ children }) {
     </BudgetContext.Provider>
   );
 }
-
