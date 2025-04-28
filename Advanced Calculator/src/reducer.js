@@ -22,7 +22,7 @@ export const ACTIONS = {
   if (state.previousValue == null) {
     return {
       ...state,
-      operation: payload, // ✅ FIXED
+      operation: payload,
       previousValue: state.currentValue,
       currentValue: null,
     };
@@ -30,7 +30,7 @@ export const ACTIONS = {
 
   return {
     ...state,
-    operation: payload, // ✅ FIXED
+    operation: payload,
   };
       case ACTIONS.CLEAR:
         return {};
